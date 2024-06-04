@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - /Users/hungwei/Desktop/code/python/nextcloud:/var/www/html/data
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=your_password
+
+  db:
+    image: mariadb
+    container_name: nextcloud_db
+    restart: always
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=your_password
+      - MYSQL_ROOT_PASSWORD=your_root_password
+    volumes:
+      - /Users/hungwei/Desktop/code/python/db:/var/lib/mysql
