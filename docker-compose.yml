@@ -1,4 +1,4 @@
-version: "3"
+version: "3.1"
 
 services:
   nextcloud:
@@ -6,16 +6,16 @@ services:
     container_name: nextcloud
     restart: always
     ports:
-      - 8080:80
+      - 8081:80
     volumes:
       - /Users/hungwei/Desktop/code/python/nextcloud:/var/www/html/data
     environment:
-      - MYSQL_HOST=db
+      - MYSQL_HOST=nextcloud_db
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_PASSWORD=your_password
 
-  db:
+  nextcloud_db:
     image: mariadb
     container_name: nextcloud_db
     restart: always
@@ -25,4 +25,45 @@ services:
       - MYSQL_PASSWORD=your_password
       - MYSQL_ROOT_PASSWORD=your_root_password
     volumes:
-      - /Users/hungwei/Desktop/code/python/db:/var/lib/mysql
+      - /Users/hungwei/Desktop/code/python/nextcloud_db:/var/lib/mysql
+
+  ghost:
+    image: ghost:5-alpine
+    restart: always
+    ports:
+      - 8080:2368
+    environment:
+      # see https://ghost.org/docs/config/#configuration-options
+      database__client: mysql
+      database__connection__host: ghost_db
+      database__connection__user: root
+      database__connection__password: example
+      database__connection__database: ghost
+      url: http://localhost:8080
+    volumes:
+      - /Users/hungwei/Desktop/code/python/ghost:/var/lib/ghost/content
+
+  ghost_db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - /Users/hungwei/Desktop/code/python/ghost_db:/var/lib/mysql
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/hungwei/Desktop/code/python/portainer_data:/data
+
+volumes:
+  nextcloud:
+  nextcloud_db:
+  ghost:
+  ghost_db:
+  portainer_data:
